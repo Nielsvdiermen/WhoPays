@@ -1,0 +1,66 @@
+{
+  "contract_name": "SimpleStorage",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "x",
+          "type": "uint256"
+        }
+      ],
+      "name": "set",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "get",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x6060604052346000575b6093806100176000396000f300606060405263ffffffff60e060020a60003504166360fe47b18114602c5780636d4ce63c14603b575b6000565b3460005760396004356057565b005b3460005760456060565b60408051918252519081900360200190f35b60008190555b50565b6000545b905600a165627a7a7230582063bb57abf74ab9cc0c43e0a57991447840c4330dc38b107cff852416e69a3e9c0029",
+  "networks": {
+    "1496504139312": {
+      "events": {},
+      "links": {},
+      "address": "0x35a2fef517dead93f5604a7483f68540d943c665",
+      "updated_at": 1496504192888
+    },
+    "1496504323810": {
+      "events": {},
+      "links": {},
+      "address": "0xff1856c50e2a5e2903e8722a58fe10e5b0751b89",
+      "updated_at": 1496505048172
+    },
+    "1496509236535": {
+      "events": {},
+      "links": {},
+      "address": "0x57d86c01ce077c69e3bd2ffcdeef87a3cfa747be",
+      "updated_at": 1496509395199
+    },
+    "1496510382419": {
+      "events": {},
+      "links": {},
+      "address": "0xc1bfc2e85378cb590c71310dc4de4649402841a8",
+      "updated_at": 1496510411442
+    },
+    "1496572015875": {
+      "events": {},
+      "links": {},
+      "address": "0xaf194c6a49ed1ad9fc235c61fd635cddede9bf09",
+      "updated_at": 1496572034253
+    }
+  },
+  "schema_version": "0.0.5",
+  "updated_at": 1496572034253
+}
