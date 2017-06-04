@@ -12,3 +12,30 @@ Users can add and resolve payments through status commands which get send to a c
 
 # Status Hackathon Entry
 This is a project created for the Status Hackathon entry. More information can be found here: https://hackathon.status.im/
+
+# Helpful commands
+
+## When opening Status or reconnecting device, perform the following steps:
+  
+  ## Run the testRPC node
+  testrpc -p 8546 
+
+  ## Switch to this testRPC node on the phone
+  status-dev-cli switch-node "http://192.168.2.4:8546" --ip 192.168.2.3
+
+  ## Migrate contracts
+  truffle migrate --reset
+
+  ## Open testrpc port to device
+  adb reverse tcp:8546 tcp:8546
+
+  ## Open truffle serve to device
+  adb reverse tcp:8080 tcp:8080
+
+  ## Truffle serve
+  truffle serve
+
+  ## Enable watching
+  status-dev-cli watch $PWD "who-pays" --ip 192.168.2.3
+
+
