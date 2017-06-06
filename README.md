@@ -20,14 +20,17 @@ This is a project created for the Status Hackathon entry. More information can b
   ## Run the testRPC node
   testrpc -p 8546 
 
+  ## Open ports
+  adb reverse tcp:8546 tcp:8546 && adb reverse tcp:8080 tcp:8080 && adb reverse tcp:3000 tcp:3000
+
+  #deploy app on windows
+  status-dev-cli add '{\"whisper-identity\": \"who-pays\", \"bot-url\": \"http://localhost:8080/bot/bot.js\", \"name\": \"WhoPays\"}' --ip 192.168.1.46;
+
   ## Switch to this testRPC node on the phone
-  status-dev-cli switch-node "http://192.168.2.4:8546" --ip 192.168.2.3
+  status-dev-cli switch-node "http://192.168.1.20:8546" --ip 192.168.1.46
 
   ## Migrate contracts
   truffle migrate --reset
-
-  ## Open ports
-  adb reverse tcp:8546 tcp:8546 && adb reverse tcp:8080 tcp:8080 && adb reverse tcp:3000 tcp:3000
 
   ## Truffle serve
   truffle serve
