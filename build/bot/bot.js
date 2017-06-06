@@ -136,46 +136,12 @@ status.command({
 
 
 /*
- * CREATE
+ * CREATE LIST
  */
-
-var createStyles = {
-  buttonContainer: { 
-    marginTop: 10,
-    flexDirection: 'row', 
-    'alignItems': 'flex-start' 
-  },
-  addButton: {
-    backgroundColor: '#02ccba',
-    height: 30,
-    borderRadius: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  doneButton: {
-    backgroundColor: '#02b3e4',
-    height: 30,
-    borderRadius: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
-    flex: 1,
-    justifyContent: 'center',
-  },
-  doneButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  }
-}
 
 var create = {
   name: "create",
-  title: "List created",
+  title: "Create list",
   icon: "smile",
   registeredOnly: true,
   description: "Create a list",
@@ -208,23 +174,170 @@ var create = {
       }
     },
   handler: function(params) {
-    localStorage.setItem("list", localStorage.getItem("list") + "," + params.create);
+    if (localStorage.getItem("list")) {
+      localStorage.setItem("list", localStorage.getItem("list") + "," + params.create);
+    } else {
+      localStorage.setItem("list", params.create);
+    }
   }
 }
 
 status.command(create);
 
+/*
+ * REMOVE LIST
+ */
+
+function suggestionsContainerStyle(suggestionsCount) {
+  return {
+      marginVertical: 1,
+      marginHorizontal: 0,
+      keyboardShouldPersistTaps: "always",
+      height: Math.min(150, (56 * suggestionsCount)),
+      backgroundColor: "white",
+      borderRadius: 5,
+      flexGrow: 1
+  };
+}
+
+var suggestionSubContainerStyle = {
+    height: 56,
+    borderBottomWidth: 1,
+    borderBottomColor: "#0000001f"
+};
+
+var valueStyle = {
+    marginTop: 9,
+    fontSize: 14,
+    fontFamily: "font",
+    color: "#000000de"
+};
+
+
+function addUserSuggestions() {
+    var lists = localStorage.getItem("list").split(',');
+    var suggestions = lists.map(function(entry) {
+        return status.components.touchable(
+            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT,[0, entry]])},
+            status.components.view(
+                suggestionsContainerStyle,
+                [status.components.view(
+                    suggestionSubContainerStyle,
+                    [
+                        status.components.text(
+                            {style: valueStyle},
+                            entry
+                        )
+                    ]
+                )]
+            )
+        );
+    });
+
+    // Let's wrap those two touchable buttons in a scrollView
+    var view = status.components.scrollView(
+        suggestionsContainerStyle(lists.length),
+        suggestions
+    );
+
+    // Give back the whole thing inside an object.
+    return {markup: view};
+}
+
+
 status.command({
-  name: "add-to-list",
-  title: "add-to-list",
+  name: "add-user",
+  title: "Add user",
   registeredOnly: true,
   description: "Add a user to a list",
   color: "#02ccba",
   sequentialParams: true,
   params: [{
-    name: "add-to-list",
+    name: "add-user",
     type: status.types.TEXT,
-    placeholder: "Select list"
+    placeholder: "Select list",
+    suggestions: addUserSuggestions
+  },
+  {
+    name: "add-user-to-list",
+    type: status.types.TEXT,
+    placeholder: "Add user"
+  }],
+});
+
+/*
+ * ADD USER
+ */
+
+function suggestionsContainerStyle(suggestionsCount) {
+  return {
+      marginVertical: 1,
+      marginHorizontal: 0,
+      keyboardShouldPersistTaps: "always",
+      height: Math.min(150, (56 * suggestionsCount)),
+      backgroundColor: "white",
+      borderRadius: 5,
+      flexGrow: 1
+  };
+}
+
+var suggestionSubContainerStyle = {
+    height: 56,
+    borderBottomWidth: 1,
+    borderBottomColor: "#0000001f"
+};
+
+var valueStyle = {
+    marginTop: 9,
+    fontSize: 14,
+    fontFamily: "font",
+    color: "#000000de"
+};
+
+
+function addUserSuggestions() {
+    var lists = localStorage.getItem("list").split(',');
+    var suggestions = lists.map(function(entry) {
+        return status.components.touchable(
+            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT,[0, entry]])},
+            status.components.view(
+                suggestionsContainerStyle,
+                [status.components.view(
+                    suggestionSubContainerStyle,
+                    [
+                        status.components.text(
+                            {style: valueStyle},
+                            entry
+                        )
+                    ]
+                )]
+            )
+        );
+    });
+
+    // Let's wrap those two touchable buttons in a scrollView
+    var view = status.components.scrollView(
+        suggestionsContainerStyle(lists.length),
+        suggestions
+    );
+
+    // Give back the whole thing inside an object.
+    return {markup: view};
+}
+
+
+status.command({
+  name: "add-user",
+  title: "Add user",
+  registeredOnly: true,
+  description: "Add a user to a list",
+  color: "#02ccba",
+  sequentialParams: true,
+  params: [{
+    name: "add-user",
+    type: status.types.TEXT,
+    placeholder: "Select list",
+    suggestions: addUserSuggestions
   },
   {
     name: "add-user-to-list",
