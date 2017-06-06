@@ -257,7 +257,6 @@ status.command({
     suggestions: removeListSuggestions
   }],
   handler: function(params) {
-    console.log("test");
     var listArray = localStorage.getItem("list").split(',');
     var itemIndex = listArray.indexOf(params.remove);
     if(itemIndex !== -1) {
@@ -312,23 +311,76 @@ status.command({
   description: "Add a user to a list",
   color: "#02ccba",
   sequentialParams: true,
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              marginHorizontal: 0,
+              fontSize: 14,
+              color: "#111111"
+            }
+          }, "You've successfully added the user " + params.user + " to the list " + params.list),
+        ])
+      }
+    },
   params: [{
-    name: "add-user",
+    name: "list",
     type: status.types.TEXT,
     placeholder: "Select list",
     suggestions: addUserSuggestions
   },
   {
-    name: "add-user-to-list",
+    name: "user",
     type: status.types.TEXT,
     placeholder: "Add user"
   }],
+  handler: function(params) {
+    if (localStorage.getItem(params.list)) {
+      localStorage.setItem(params.list, localStorage.getItem(params.list) + "," + params.user);
+    } else {
+      localStorage.setItem(params.list, params.user);
+    }
+  }
 });
 
-
 /*
+ * VIEW LIST
+ */
 
-function createScrollView() {
+
+function viewListSuggestions() {
+    var lists = localStorage.getItem("list").split(',');
+    var suggestions = lists.map(function(entry) {
+        return status.components.touchable(
+            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT,[0, entry]])},
+            status.components.view(
+                suggestionsContainerStyle,
+                [status.components.view(
+                    suggestionSubContainerStyle,
+                    [
+                        status.components.text(
+                            {style: valueStyle},
+                            entry
+                        )
+                    ]
+                )]
+            )
+        );
+    });
+
+    // Let's wrap those two touchable buttons in a scrollView
+    var view = status.components.scrollView(
+        suggestionsContainerStyle(lists.length),
+        suggestions
+    );
+
+    // Give back the whole thing inside an object.
+    return {markup: view};
+}
+
+function ViewListScrollView() {
   return {
       horizontal: true,
       pagingEnabled: true,
@@ -337,71 +389,69 @@ function createScrollView() {
   };
 }
 
+function showViewList(params, context) {
 
-function showCreate() {
+  var users = localStorage.getItem(params.list).split(',');
+  var userText = users.map(function(user) {
+    return status.components.view(
+      {},
+      [
+        status.components.text(
+            {},
+            user
+          )
+      ]
+    )
+  });
+
+  var screen = [status.components.view(
+    {},
+    userText
+  )];
 
   var view = status.components.scrollView(
-    createScrollView(),
-    [status.components.view({},[
-      status.components.view({},[
-        status.components.text({
-          style: {
-            marginTop: 5,
-            marginHorizontal: 0,
-            fontSize: 14,
-            color: "#111111"
-          }
-        }, "test"),
-        status.components.text({
-          style: {
-            marginTop: 5,
-            marginHorizontal: 0,
-            fontSize: 14,
-            color: "#111111"
-          }
-        }, web3.eth.accounts[0]),
-        status.components.touchable(
-          { onPress: status.components.dispatch([status.events.SET_VALUE, "/add-to-list "]) },
-          status.components.view(
-              { style: createStyles.addButton },
-              [status.components.view(
-                  {},
-                  [
-                      status.components.text(
-                          { style: createStyles.addButtonText },
-                          "Add address"
-                      )
-                  ]
-              )]
-          )),
-      ])
-    ])]
+    ViewListScrollView(),
+    screen
   );
 
-
   return {
-    title: "Create a list",
+    title: "View list",
     dynamicTitle: false,
     singleLineInput: true,
     markup: view
   };
 }
 
-  /*
-    // Empty the users list, since we're creating a new one
-    web3.db.putString("users", "users", "");
-    showCreate();
-  }
+status.command({
+  name: "view",
+  title: "view",
+  registeredOnly: true,
+  description: "View a list with its members",
+  color: "#02ccba",
+  fullscreen: true,
+  onSend: showViewList,
+  params: [{
+    name: "list",
+    type: status.types.TEXT,
+    placeholder: "Select list",
+    suggestions: viewListSuggestions
+  }],
+});
 
 
-/*
+status.addListener("on-message-send", function (params, context) {
+     var result = {
+             err: null,
+             data: null,
+             messages: []
+         };
 
+     try {
+         result["text-message"] = "You're amazing, master!";
+     } catch (e) {
+         result.err = e;
+     }
 
-// /create "List name"
-// List created, this is the actionable message (Click here to add users)
-
-// give name
-// add users
-// Create
-// Make contract
-*/
+    console.log('our console logger');
+    return result;
+ });
