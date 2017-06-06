@@ -85,7 +85,7 @@ function showGetStarted(params, context) {
     }
   ];
 
-  var suggestions = steps.map(function (step) {
+  var screens = steps.map(function (step) {
       return status.components.view(
         styles.step,
         [
@@ -113,7 +113,7 @@ function showGetStarted(params, context) {
 
   var view = status.components.scrollView(
     getStartedScrollView(),
-    suggestions
+    screens
   );
 
   return {
@@ -123,7 +123,6 @@ function showGetStarted(params, context) {
     markup: view
   };
 }
-
 
 status.command({
   name: "get-started",
@@ -136,3 +135,181 @@ status.command({
 });
 
 
+/*
+ * CREATE
+ */
+
+var createStyles = {
+  buttonContainer: { 
+    marginTop: 10,
+    flexDirection: 'row', 
+    'alignItems': 'flex-start' 
+  },
+  addButton: {
+    backgroundColor: '#02ccba',
+    height: 30,
+    borderRadius: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  doneButton: {
+    backgroundColor: '#02b3e4',
+    height: 30,
+    borderRadius: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  doneButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  }
+}
+
+var create = {
+  name: "create",
+  title: "List created",
+  icon: "smile",
+  registeredOnly: true,
+  description: "Create a list",
+  color: "#02ccba",
+  params: [{
+    name: "create",
+    type: status.types.TEXT,
+    placeholder: "Add your list name"
+  }],
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              marginHorizontal: 0,
+              fontSize: 14,
+              color: "#111111"
+            }
+          }, "You've successfully created a list named"),
+          status.components.text({
+            style: {
+              marginHorizontal: 0,
+              fontSize: 14,
+              fontWeight: 'bold',
+              color: "#111111",
+            }
+          }, params.create + "."),
+        ])
+      }
+    },
+  handler: function(params) {
+    localStorage.setItem("list", localStorage.getItem("list") + "," + params.create);
+  }
+}
+
+status.command(create);
+
+status.command({
+  name: "add-to-list",
+  title: "add-to-list",
+  registeredOnly: true,
+  description: "Add a user to a list",
+  color: "#02ccba",
+  sequentialParams: true,
+  params: [{
+    name: "add-to-list",
+    type: status.types.TEXT,
+    placeholder: "Select list"
+  },
+  {
+    name: "add-user-to-list",
+    type: status.types.TEXT,
+    placeholder: "Add user"
+  }],
+});
+
+
+/*
+
+function createScrollView() {
+  return {
+      horizontal: true,
+      pagingEnabled: true,
+      backgroundColor: "#02b7cc",
+      flexDirection: 'row',
+  };
+}
+
+
+function showCreate() {
+
+  var view = status.components.scrollView(
+    createScrollView(),
+    [status.components.view({},[
+      status.components.view({},[
+        status.components.text({
+          style: {
+            marginTop: 5,
+            marginHorizontal: 0,
+            fontSize: 14,
+            color: "#111111"
+          }
+        }, "test"),
+        status.components.text({
+          style: {
+            marginTop: 5,
+            marginHorizontal: 0,
+            fontSize: 14,
+            color: "#111111"
+          }
+        }, web3.eth.accounts[0]),
+        status.components.touchable(
+          { onPress: status.components.dispatch([status.events.SET_VALUE, "/add-to-list "]) },
+          status.components.view(
+              { style: createStyles.addButton },
+              [status.components.view(
+                  {},
+                  [
+                      status.components.text(
+                          { style: createStyles.addButtonText },
+                          "Add address"
+                      )
+                  ]
+              )]
+          )),
+      ])
+    ])]
+  );
+
+
+  return {
+    title: "Create a list",
+    dynamicTitle: false,
+    singleLineInput: true,
+    markup: view
+  };
+}
+
+  /*
+    // Empty the users list, since we're creating a new one
+    web3.db.putString("users", "users", "");
+    showCreate();
+  }
+
+
+/*
+
+
+// /create "List name"
+// List created, this is the actionable message (Click here to add users)
+
+// give name
+// add users
+// Create
+// Make contract
+*/

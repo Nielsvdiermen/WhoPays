@@ -26,11 +26,8 @@ This is a project created for the Status Hackathon entry. More information can b
   ## Migrate contracts
   truffle migrate --reset
 
-  ## Open testrpc port to device
-  adb reverse tcp:8546 tcp:8546
-
-  ## Open truffle serve to device
-  adb reverse tcp:8080 tcp:8080
+  ## Open ports
+  adb reverse tcp:8546 tcp:8546 && adb reverse tcp:8080 tcp:8080 && adb reverse tcp:3000 tcp:3000
 
   ## Truffle serve
   truffle serve
