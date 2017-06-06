@@ -3,16 +3,16 @@ pragma solidity ^0.4.6;
 
 contract Whopay {
   //struct db for contract resolving
-  struct memberOw{
-    uint amount;
-  }
+  //struct memberOw{
+  //  uint amount;
+ // }
   
   // Struct DB for each member
   struct member {
     uint memberPaid;
     uint balance;
     bool positive;
-    mapping (address => memberOw) memberOwing;
+    mapping (address => uint) memberOwing;
   }
 
   //group parameters
@@ -116,12 +116,12 @@ contract Whopay {
             //reduce positive on other member
             if (memberInfo[memberList[j]].balance > memberInfo[memberList[i]].balance){
               memberInfo[memberList[j]].balance -= memberInfo[memberList[i]].balance;
-              memberInfo[memberList[i]].memberOwing[memberList[j]].amount = memberInfo[memberList[i]].balance;
+              memberInfo[memberList[i]].memberOwing[memberList[j]] = memberInfo[memberList[i]].balance;
               memberInfo[memberList[i]].balance = 0;
             }
             else{
               memberInfo[memberList[i]].balance -= memberInfo[memberList[j]].balance;
-              memberInfo[memberList[i]].memberOwing[memberList[j]].amount = memberInfo[memberList[j]].balance;
+              memberInfo[memberList[i]].memberOwing[memberList[j]] = memberInfo[memberList[j]].balance;
               memberInfo[memberList[j]].balance = 0;
             }
           }
@@ -133,6 +133,10 @@ contract Whopay {
   //test functions
   function userBalance(address member) constant returns(uint, bool){
     return (memberInfo[member].balance,memberInfo[member].positive);
+  }
+
+  function userOws(address member,address other) constant returns(uint){
+    return memberInfo[member].memberOwing[other];
   }
 }
 
