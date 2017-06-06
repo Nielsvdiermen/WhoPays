@@ -188,6 +188,7 @@ status.command(create);
  * REMOVE LIST
  */
 
+// General suggestions style, will also be used by other suggestions
 function suggestionsContainerStyle(suggestionsCount) {
   return {
       marginVertical: 1,
@@ -213,8 +214,7 @@ var valueStyle = {
     color: "#000000de"
 };
 
-
-function addUserSuggestions() {
+function removeListSuggestions() {
     var lists = localStorage.getItem("list").split(',');
     var suggestions = lists.map(function(entry) {
         return status.components.touchable(
@@ -244,56 +244,35 @@ function addUserSuggestions() {
     return {markup: view};
 }
 
-
 status.command({
-  name: "add-user",
-  title: "Add user",
+  name: "remove",
+  title: "Remove a list",
   registeredOnly: true,
-  description: "Add a user to a list",
+  description: "Remove a list",
   color: "#02ccba",
-  sequentialParams: true,
   params: [{
-    name: "add-user",
+    name: "remove",
     type: status.types.TEXT,
     placeholder: "Select list",
-    suggestions: addUserSuggestions
-  },
-  {
-    name: "add-user-to-list",
-    type: status.types.TEXT,
-    placeholder: "Add user"
+    suggestions: removeListSuggestions
   }],
+  handler: function(params) {
+    console.log("test");
+    var listArray = localStorage.getItem("list").split(',');
+    var itemIndex = listArray.indexOf(params.remove);
+    if(itemIndex !== -1) {
+      listArray.splice(itemIndex, 1);
+    }
+    // Remove the list from the listArray
+    localStorage.setItem("list",  listArray.toString());
+    // Remove the list which contains the user data
+    localStorage.setItem(params.remove, null);
+  }
 });
 
 /*
  * ADD USER
  */
-
-function suggestionsContainerStyle(suggestionsCount) {
-  return {
-      marginVertical: 1,
-      marginHorizontal: 0,
-      keyboardShouldPersistTaps: "always",
-      height: Math.min(150, (56 * suggestionsCount)),
-      backgroundColor: "white",
-      borderRadius: 5,
-      flexGrow: 1
-  };
-}
-
-var suggestionSubContainerStyle = {
-    height: 56,
-    borderBottomWidth: 1,
-    borderBottomColor: "#0000001f"
-};
-
-var valueStyle = {
-    marginTop: 9,
-    fontSize: 14,
-    fontFamily: "font",
-    color: "#000000de"
-};
-
 
 function addUserSuggestions() {
     var lists = localStorage.getItem("list").split(',');
