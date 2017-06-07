@@ -142,10 +142,10 @@ status.command({
 var create = {
   name: "create",
   title: "Create list",
-  icon: "smile",
+  icon: "list",
   registeredOnly: true,
   description: "Create a list",
-  color: "#02ccba",
+  color: "#2bd18e",
   params: [{
     name: "create",
     type: status.types.TEXT,
@@ -157,19 +157,18 @@ var create = {
           status.components.text({
             style: {
               marginTop: 5,
-              marginHorizontal: 0,
               fontSize: 14,
-              color: "#111111"
+              color: "#555555",
             }
-          }, "You've successfully created a list named"),
+          }, "Create a list named "),
           status.components.text({
             style: {
-              marginHorizontal: 0,
+              marginTop: 2,
               fontSize: 14,
-              fontWeight: 'bold',
               color: "#111111",
+              fontWeight: 'bold',
             }
-          }, params.create + "."),
+          }, params.create),
         ])
       }
     },
@@ -179,6 +178,7 @@ var create = {
     } else {
       localStorage.setItem("list", params.create);
     }
+    status.sendMessage("You've successfully created a new list: " + params.create + '.');
   }
 }
 
