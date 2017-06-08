@@ -110,7 +110,7 @@ contract Whopay {
         uint paid = memberInfo[memberList[i]].memberExpense;
         uint userBalance;
 
-        if (paid > perUser){
+        if (paid >= perUser){
           userBalance = paid - perUser;
           memberInfo[memberList[i]].positive = true;
         }
