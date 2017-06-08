@@ -553,8 +553,12 @@ status.command({
   }],
   handler: function(params) {  
     var list = getList(params.name);
+    var addresses = [];
+    for (var i = 0; i < list.users.length; i++) {
+      addresses.push(list.users[i].address);
+    }
 
-    var myContractInstance = WhoPaysContract.new("derp", list.users, {
+    var myContractInstance = WhoPaysContract.new("derp", addresses, {
       from: web3.eth.accounts[0],
       data: byteCode,
       gas: '2500000'
@@ -565,17 +569,6 @@ status.command({
     addContractToList(params.name, hash.contractAddress);
     status.sendMessage("List created. Copy the address below to the friends you added to this list.");
     status.sendMessage(hash.contractAddress);
-  }
-});
-
-status.command({
-  name: "data",
-  title: "data",
-  registeredOnly: true,
-  description: "Get sample data",
-  color: "#2bd18e",
-  handler: function(params) { 
-    status.sendMessage(localStorage.getItem("data"));
   }
 });
 
@@ -760,6 +753,7 @@ status.command({
 
 /* HAPPY DONE
 - TEST TOGETHER
+- ADD YOURSELF TO A LIST
 - MAKE IT IMPOSSIBLE TO ADD A DOUBLE LIST
 - MAKE IT IMPOSSIBLE TO REMOVE LIST WHEN CONTRACT IS STILL OPEN
 - IMPROVE VIEW STYLING
