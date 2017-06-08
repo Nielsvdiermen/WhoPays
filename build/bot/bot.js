@@ -600,8 +600,7 @@ status.command({
       var instance = WhoPaysContract.at(list.hash);
       // Set defaultAccount which is needed for transactions
       web3.eth.defaultAccount = web3.eth.accounts[0];
-      //var tx = instance.addExpense(web3.eth.accounts[0], params.expense);
-      var tx = instance.addExpense("0xd518b91f4964706b161ec99f2c351c888b19c0b1", web3.toWei(params.expense, 'ether'));
+      var tx = instance.addExpense(web3.eth.accounts[0], web3.toWei(params.expense, 'ether'));
       status.sendMessage("Adding expenses of *" + params.expense + "*. Hold on a second..");
       var txDone = waitForTransactionHash(tx);
       if (txDone) {
@@ -672,7 +671,7 @@ status.command({
       web3.eth.defaultAccount = web3.eth.accounts[0];
       var name = instance.groupInfo();
       var users = instance.listMembers();
-      joinListWithHash("ditisietsanders", users, params.hash);
+      joinListWithHash(name, users, params.hash);
     }
   }
 });
