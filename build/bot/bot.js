@@ -552,12 +552,9 @@ status.command({
     suggestions: listSuggestions
   }],
   handler: function(params) {  
-    // TODO: Hardcoded for testing
-    // Replace users with list.users
-    // var list = getList(params.name);
-    var users = ["0xd518b91f4964706b161ec99f2c351c888b19c0b1", "0x1d99ae78d6a37c0d2e9b8f86af31e9a673fa72f8"];
+    var list = getList(params.name);
 
-    var myContractInstance = WhoPaysContract.new("derp", users, {
+    var myContractInstance = WhoPaysContract.new("derp", list.users, {
       from: web3.eth.accounts[0],
       data: byteCode,
       gas: '2500000'
