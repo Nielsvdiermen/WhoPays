@@ -141,7 +141,7 @@ function addUserToList(name, address) {
   var data = getData();
   for (var i = 0; i < data.length; i++) {
     if (data[i].name === name) {
-      data[i].users.push({ address: address });
+      data[i].users.push(address);
     }
   }
   setData(data);
@@ -220,7 +220,7 @@ var styles = {
     height: 450,
     flex: 1,
     marginBottom: 100,
-    width: 360,
+    width: 410,
     paddingLeft: 30,
     paddingRight: 30,
     paddingTop: 50
@@ -453,7 +453,11 @@ status.command({
       }
     },
   handler: function(params) {
-    addUserToList(params.name, params.address);
+    if (params.address[0] == '0' && params.address[1] == 'x') {
+      addUserToList(params.name, params.address);
+    } else {
+      addUserToList(params.name, "0x" + params.address);
+    }
   }
 });
 
@@ -515,6 +519,15 @@ function getMemberInfo(instance, currentStatus, address) {
 
 }
 
+var viewStyles = {
+  header: {
+    backgroundColor: '#2bd18e',
+    alignItems: 'center',
+    padding: 15,
+    justifyContent: 'center',
+  }
+}
+
 function showViewList(params) {
 
   var list = getList(params.list);
@@ -522,36 +535,146 @@ function showViewList(params) {
   if (list.hash) {
     var instance = WhoPaysContract.at(list.hash);
     // Set defaultAccount which is needed for transactions
-    // web3.eth.defaultAccount = web3.eth.accounts[0];
+    web3.eth.defaultAccount = web3.eth.accounts[0];
     var listStatus = instance.getStatus();
     var listMembers = instance.listMembers();
+    var totalAmount = instance.totalStatus();
 
-    var userList = [status.components.view(
-        {},
-        [status.components.text(
-          {},
-          "This list is closed"
-        )]
-      )
-    ];
+    if (listStatus == 0) {
+      var statusHeader = status.components.view({}, [
+          status.components.text(
+            { style: { textAlign: 'center', color: 'rgba(255,255,255, 0.8)', fontSize: 15 }},
+            "TOTAL EXPENSES"
+          ),
+          status.components.text(
+            { style: { textAlign: 'center', color: '#fff', fontSize: 28 }},
+            "Ξ" + web3.fromWei(totalAmount, 'ether')
+          ),
+          status.components.text(
+            { style: { textAlign: 'center', color: 'rgba(255,255,255, 0.8)', fontSize: 13 }},
+            "Everyone can add their expenses"
+          )
+        ]
+      );
 
-    if (listStatus != 2) {
-      userList = listMembers.map(function(address) {
+      var userList = listMembers.map(function(address) {
         return status.components.view(
-          {},
-          [getMemberInfo(instance, listStatus, address)]
+          { flexDirection: 'row', padding: 15, borderBottomColor: '#dddddd', borderBottomWidth: 1, borderBottomStyle: 'solid', alignItems: 'center' },
+          [
+            status.components.text({ style: { backgroundColor: '#2bd18e', borderRadius: 5, textAlign: 'center', padding: 5, color: '#fff', fontWeight: 'bold', fontSize: 16, marginRight: 10 }},
+              "Ξ" + web3.fromWei(instance.memberStatus(address), 'ether')
+            ),
+            status.components.text({ style: { color: '#888fa0', fontSize: 12 }},
+              address
+            ),
+          ]
         )
       });
     }
 
+    if (listStatus == 3) {
+      var statusHeader = status.components.view({}, [
+          status.components.text(
+            { style: { textAlign: 'center', color: 'rgba(255,255,255, 0.8)', fontSize: 15 }},
+            "TOTAL EXPENSES"
+          ),
+          status.components.text(
+            { style: { textAlign: 'center', color: '#fff', fontSize: 28 }},
+            "Ξ" + web3.fromWei(totalAmount, 'ether')
+          ),
+          status.components.text(
+            { style: { textAlign: 'center', color: 'rgba(255,255,255, 0.8)', fontSize: 13 }},
+            "List closed. Check if you need to pay."
+          )
+        ]
+      );
+
+      var userList = listMembers.map(function(address) {
+        var memberBalance = instance.memberBalance(address);
+
+        if (memberBalance[1] === true) {
+          return status.components.view(
+            { flexDirection: 'row', padding: 15, borderBottomColor: '#dddddd', borderBottomWidth: 1, borderBottomStyle: 'solid', alignItems: 'center' },
+            [
+              status.components.text({ style: { backgroundColor: '#2bd18e', borderRadius: 5, textAlign: 'center', padding: 5, color: '#fff', fontWeight: 'bold', fontSize: 16, marginRight: 10 }},
+                "Ξ" + web3.fromWei(memberBalance[0], 'ether')
+              ),
+              status.components.view({ flexDirection: 'column' }, [
+                status.components.text({ style: { color: '#111', fontSize: 12, fontWeight: 'bold' }},
+                  "RECEIVE"
+                ),
+                status.components.text({ style: { color: '#888fa0', fontSize: 12 }},
+                  address
+                ),
+              ])
+            ]
+          )
+        } else {
+          return status.components.view(
+            { flexDirection: 'row', padding: 15, borderBottomColor: '#dddddd', borderBottomWidth: 1, borderBottomStyle: 'solid', alignItems: 'center' },
+            [
+              status.components.text({ style: { backgroundColor: '#f04213', borderRadius: 5, textAlign: 'center', padding: 5, color: '#fff', fontWeight: 'bold', fontSize: 16, marginRight: 10 }},
+                "Ξ" + web3.fromWei(memberBalance[0], 'ether')
+              ),
+              status.components.view({ flexDirection: 'column' }, [
+                status.components.text({ style: { color: '#111', fontSize: 12, fontWeight: 'bold' }},
+                  "PAY"
+                ),
+                status.components.text({ style: { color: '#888fa0', fontSize: 12 }},
+                  address
+                ),
+              ])
+            ]
+          )
+        }
+      });
+    }
+
+    if (listStatus == 1) {
+      var statusHeader = status.components.view({}, [
+          status.components.text(
+            { style: { textAlign: 'center', color: '#fff', fontSize: 28 }},
+            "LIST CLOSED"
+          ),
+          status.components.text(
+            { style: { textAlign: 'center', color: 'rgba(255,255,255, 0.8)', fontSize: 13 }},
+            "If you had to receive money, check your wallet :)."
+          )
+        ]
+      );
+
+      var userList = [status.components.view({},
+       [
+        status.components.text({ style: { backgroundColor: '#f1f1f1', margin: 10, borderRadius: 5, textAlign: 'center', padding: 5, color: '#111', fontWeight: 'bold', fontSize: 16 }},
+          "List is closed"
+        ),
+       ]
+      )]
+    }
+
+    var viewScreen = [status.components.view(
+        viewStyles.header,
+        [statusHeader]
+    ), status.components.scrollView({ horizontal: true, pagingEnabled: true, backgroundColor: "#fff", flexDirection: 'row' },
+        [status.components.view(
+          { flexDirection: 'column', width: 360 },
+          userList
+        )]
+      )
+    ];
 
     var screen = [status.components.view(
-      {},
-      userList
+      { alignItems: 'stretch', flexDirection: 'column', width: 360 },
+      viewScreen
     )];
 
     var view = status.components.scrollView(
-      ViewListScrollView(),
+      {
+        horizontal: true,
+        pagingEnabled: true,
+        backgroundColor: "#fff",
+        flexDirection: 'row',
+      },
       screen
     );
   }
@@ -579,15 +702,6 @@ status.command({
   }],
 });
 
-
-function ViewListScrollView() {
-  return {
-    horizontal: true,
-    pagingEnabled: true,
-    backgroundColor: "#02b7cc",
-    flexDirection: 'row',
-  };
-}
 
 /*
  * ACTIVATE
@@ -628,7 +742,7 @@ status.command({
     var list = getList(params.name);
     var addresses = [];
     for (var i = 0; i < list.users.length; i++) {
-      addresses.push(list.users[i].address);
+      addresses.push(list.users[i]);
     }
 
     var myContractInstance = WhoPaysContract.new(params.name, addresses, {
@@ -706,7 +820,7 @@ status.command({
       // Set defaultAccount which is needed for transactions
       web3.eth.defaultAccount = web3.eth.accounts[0];
       var tx = instance.addExpense(web3.eth.accounts[0], web3.toWei(params.expense, 'ether'));
-      status.sendMessage("Adding expenses of *Ξ" + params.expense + "*. Please wait..");
+      status.sendMessage("Adding expense of *Ξ" + params.expense + "*. Please wait..");
       var txDone = waitForTransactionHash(tx);
       if (txDone) {
         status.sendMessage("Expense of *Ξ" + params.expense + "* added!");
@@ -957,12 +1071,10 @@ status.command({
   }
 });
 
-
 /* 
 - IMPROVE VIEW STYLING
-- IMPROVE GET STARTED STYLING
-- IMPROVE SENDMESSAGES TEXT
-- IMPROVE PREVIEW TEXT
+- IMPROVE LIST SUGGESTIONS TO ONLY SHOW WHEN RELEVANT
+- DO AN ADDRESS CHECK ON ADD USER, ADD 0X if REQUIRED
  TODO LATER:
 - ADD ERROR HANDLER IF RESOLVER IS NOT THE CREATOR
 - MAKE IT IMPOSSIBLE TO REMOVE LIST WHEN CONTRACT IS STILL OPEN
