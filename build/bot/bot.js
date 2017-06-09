@@ -42,6 +42,14 @@ var subValueStyle = {
   color: "#555",
 }
 
+function getListUserNumber(length) {
+  if (length === 1) {
+    return "1 user";
+  } else {
+    return length + " users";
+  }
+}
+
 function listSuggestions() {
   var suggestions;
   if (getData().length !== 0) {
@@ -59,7 +67,7 @@ function listSuggestions() {
               ),
               status.components.text(
                 {style: subValueStyle},
-                entry.users.length + " users"
+                getListUserNumber(entry.users.length)
               )
             ]
           )]
@@ -358,13 +366,15 @@ var create = {
             style: {
               marginTop: 5,
               fontSize: 15,
+              color: '#000000',
             }
-          }, "Created a list named: "),
+          }, "Created a list named "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
+              color: "#000000",
+              fontWeight: 'bold',
             }
           }, params.name),
         ])
@@ -447,8 +457,35 @@ status.command({
               marginTop: 5,
               marginHorizontal: 0,
               fontSize: 14,
+              color: '#000000'
             }
-          }, "Adding user with the following Ether address: " + params.address + " to " + params.name + "."),
+          }, "Added"),
+          status.components.text({
+            style: {
+              marginTop: 5,
+              marginHorizontal: 0,
+              fontSize: 14,
+              fontWeight: 'bold',
+              color: '#000000'
+            }
+          }, params.address),
+          status.components.text({
+            style: {
+              marginTop: 5,
+              marginHorizontal: 0,
+              fontSize: 14,
+              color: '#000000'
+            }
+          }, "to"),
+          status.components.text({
+            style: {
+              marginTop: 5,
+              marginHorizontal: 0,
+              fontSize: 14,
+              fontWeight: 'bold',
+              color: '#000000'
+            }
+          }, params.name),
         ])
       }
     },
@@ -528,6 +565,16 @@ var viewStyles = {
   }
 }
 
+function renderYou(address) {
+  if (address === web3.eth.accounts[0]) {
+    return status.components.text({ style: { position: 'absolute', 'right': 0, top: -2, fontSize: 10, fontWeight: 'bold', backgroundColor: '#f1f1f1', color: '#111', borderRadius: 5, textAlign: 'center', paddingLeft: 5, paddingRight: 5, paddingTop: 2, paddingBottom: 2 }},
+      "YOU" 
+    )
+  }
+
+  return null;
+  
+}
 function showViewList(params) {
 
   var list = getList(params.list);
@@ -572,7 +619,7 @@ function showViewList(params) {
       });
     }
 
-    if (listStatus == 3) {
+    if (listStatus == 1) {
       var statusHeader = status.components.view({}, [
           status.components.text(
             { style: { textAlign: 'center', color: 'rgba(255,255,255, 0.8)', fontSize: 15 }},
@@ -606,6 +653,7 @@ function showViewList(params) {
                 status.components.text({ style: { color: '#888fa0', fontSize: 12 }},
                   address
                 ),
+                renderYou(address)
               ])
             ]
           )
@@ -623,6 +671,7 @@ function showViewList(params) {
                 status.components.text({ style: { color: '#888fa0', fontSize: 12 }},
                   address
                 ),
+                renderYou(address)
               ])
             ]
           )
@@ -630,23 +679,16 @@ function showViewList(params) {
       });
     }
 
-    if (listStatus == 1) {
-      var statusHeader = status.components.view({}, [
-          status.components.text(
-            { style: { textAlign: 'center', color: '#fff', fontSize: 28 }},
-            "LIST CLOSED"
-          ),
-          status.components.text(
-            { style: { textAlign: 'center', color: 'rgba(255,255,255, 0.8)', fontSize: 13 }},
-            "If you had to receive money, check your wallet :)."
-          )
-        ]
-      );
+    if (listStatus == 2) {
+      var statusHeader = null;
 
-      var userList = [status.components.view({},
+      var userList = [status.components.view({ backgroundColor: '#2bd18e', flex: 1, alignItems: 'center', justifyContent: 'center' },
        [
-        status.components.text({ style: { backgroundColor: '#f1f1f1', margin: 10, borderRadius: 5, textAlign: 'center', padding: 5, color: '#111', fontWeight: 'bold', fontSize: 16 }},
+        status.components.text({ style: { textAlign: 'center', padding: 5, color: '#fff', fontSize: 24 }},
           "List is closed"
+        ),
+        status.components.text({ style: { textAlign: 'center', padding: 5, color: 'rgba(255,255,255, 0.7)', fontSize: 18 }},
+          "If you had to receive money, take a look in your wallet :)"
         ),
        ]
       )]
@@ -657,14 +699,14 @@ function showViewList(params) {
         [statusHeader]
     ), status.components.scrollView({ horizontal: true, pagingEnabled: true, backgroundColor: "#fff", flexDirection: 'row' },
         [status.components.view(
-          { flexDirection: 'column', width: 360 },
+          { flexDirection: 'column', width: 410 },
           userList
         )]
       )
     ];
 
     var screen = [status.components.view(
-      { alignItems: 'stretch', flexDirection: 'column', width: 360 },
+      { alignItems: 'stretch', flexDirection: 'column', width: 410 },
       viewScreen
     )];
 
@@ -787,6 +829,7 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
+              color: "#000000"
             }
           }, "Added "),
           status.components.text({
@@ -794,12 +837,14 @@ status.command({
               marginTop: 2,
               fontSize: 15,
               fontWeight: 'bold',
+              color: "#000000"
             }
-          }, params.expense),
+          }, "Ξ" + params.expense),
           status.components.text({
             style: {
               marginTop: 5,
               fontSize: 15,
+              color: "#000000"
             }
           }, "to: "),
           status.components.text({
@@ -807,6 +852,7 @@ status.command({
               marginTop: 2,
               fontSize: 15,
               fontWeight: 'bold',
+              color: "#000000"
             }
           }, params.list),
         ])
