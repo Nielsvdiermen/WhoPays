@@ -103,15 +103,26 @@ function listSuggestions() {
 
 
 function createList(name) {
-  var list = { name: name, users: [], hash: null };
+  var list = { name: name, users: [web3.eth.accounts[0]], hash: null };
   if (localStorage.getItem("data")) {
     var data = JSON.parse(localStorage.getItem("data"));
-    data.push(list);
-    setData(data);
+    var exists = false;
+    for (var i = 0; i < data.length; i++) {
+      if (name === data[i].name) {
+        exists = true;
+      }
+    }
+    if (!exists) {
+      data.push(list);
+      setData(data);
+      status.sendMessage("You've successfully created a new list *" + name + '*.');
+    } else {
+      status.sendMessage("You've got a list named *" + name + '*. Please create one with a different name.');
+    }
   } else {
     setData([list]);
+    status.sendMessage("You've successfully created a new list *" + name + '*.');
   }
-  status.sendMessage("You've successfully created a new list: " + name + '.');
 }
 
 function joinListWithHash(name, users, hash) {
@@ -558,7 +569,7 @@ status.command({
       addresses.push(list.users[i].address);
     }
 
-    var myContractInstance = WhoPaysContract.new("derp", addresses, {
+    var myContractInstance = WhoPaysContract.new(params.name, addresses, {
       from: web3.eth.accounts[0],
       data: byteCode,
       gas: '2500000'
@@ -601,10 +612,10 @@ status.command({
       // Set defaultAccount which is needed for transactions
       web3.eth.defaultAccount = web3.eth.accounts[0];
       var tx = instance.addExpense(web3.eth.accounts[0], web3.toWei(params.expense, 'ether'));
-      status.sendMessage("Adding expenses of *" + params.expense + "*. Hold on a second..");
+      status.sendMessage("Adding expenses of *Ξ" + params.expense + "*. Hold on a second..");
       var txDone = waitForTransactionHash(tx);
       if (txDone) {
-        status.sendMessage("Expense of *" + params.expense + "* added!");
+        status.sendMessage("Expense of *Ξ" + params.expense + "* added!");
       }
     }
   }
@@ -639,10 +650,10 @@ status.command({
       // Set defaultAccount which is needed for transactions
       web3.eth.defaultAccount = web3.eth.accounts[0];
       var tx = instance.removeExpense(web3.eth.accounts[0], web3.toWei(params.expense, 'ether'));
-      status.sendMessage("Removing expense of *" + params.expense + "*. Hold on a second..");
+      status.sendMessage("Removing expense of *Ξ" + params.expense + "*. Hold on a second..");
       var txDone = waitForTransactionHash(tx);
       if (txDone) {
-        status.sendMessage("Expense of *" + params.expense + "* removed!");
+        status.sendMessage("Expense of *Ξ" + params.expense + "* removed!");
       }
     }
   }
@@ -750,13 +761,28 @@ status.command({
   }
 });
 
-/* HAPPY DONE
-- TEST TOGETHER
-- ADD YOURSELF TO A LIST
-- MAKE IT IMPOSSIBLE TO ADD A DOUBLE LIST
-- MAKE IT IMPOSSIBLE TO REMOVE LIST WHEN CONTRACT IS STILL OPEN
+
+status.command({
+  name: "data",
+  title: "data",
+  registeredOnly: true,
+  description: "Get sample data",
+  color: "#2bd18e",
+  handler: function(params) { 
+    status.sendMessage(localStorage.getItem("data"));
+  }
+});
+
+
+/* 
+X ADD YOURSELF TO A LIST
+X ADD ETHER ICON TO EXPENSES
+X MAKE IT IMPOSSIBLE TO ADD A DOUBLE LIST
 - IMPROVE VIEW STYLING
 - IMPROVE GET STARTED STYLING
 - IMPROVE SENDMESSAGES TEXT
 - IMPROVE PREVIEW TEXT
+ TODO LATER:
+- ADD ERROR HANDLER IF RESOLVER IS NOT THE CREATOR
+- MAKE IT IMPOSSIBLE TO REMOVE LIST WHEN CONTRACT IS STILL OPEN
 */
