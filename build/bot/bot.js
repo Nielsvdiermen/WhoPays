@@ -208,7 +208,7 @@ function getStartedScrollView() {
   return {
       horizontal: true,
       pagingEnabled: true,
-      backgroundColor: "#02b7cc",
+      backgroundColor: "#2bd18f",
       flexDirection: 'row',
   };
 }
@@ -216,14 +216,14 @@ function getStartedScrollView() {
 var styles = {
   step: {
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
     height: 450,
     flex: 1,
     marginBottom: 100,
     width: 360,
     paddingLeft: 30,
     paddingRight: 30,
-    paddingBottom: 100
+    paddingTop: 50
   },
   title: {
     color: "#fff",
@@ -233,9 +233,9 @@ var styles = {
   },
   desc: {
     color: "rgba(255,255,255, 0.8)",
-    fontSize: 15,
+    fontSize: 16,
     textAlign: 'center',
-    lineHeight: 21
+    lineHeight: 24
   },
 }
 
@@ -244,34 +244,34 @@ function showGetStarted(params, context) {
   var steps = [
     {
       title: "Welcome to WhoPays",
-      desc: "Someone from your group creates a list and invites the other users",
-      image: "https://status.im/img/crowdsale/phone@2x.png",
-      image_width: 240,
-      image_height: 200,
+      desc: "Scroll to the side for a short introduction",
+      image: "https://ethdeveloper.com/static/get-started-0.png",
+      image_width: 150,
+      image_height: 150,
     },
     {
       title: "Create a list",
-      desc: "Someone from your group creates a list and invites the other users",
+      desc: "You can create a list to track expenses with a group during, for example, an event or holiday. You can add your friends to this list.",
       image: "https://ethdeveloper.com/static/get-started-1.png",
       image_width: 128,
       image_height: 128,
     },
     {
       title: "Add expenses",
-      desc: "Everyone from the group can add their expenses to the list",
+      desc: "Everyone from the group can add their expenses to the list.",
       image: "https://ethdeveloper.com/static/get-started-2.png",
       image_width: 128,
       image_height: 128,
     },
     {
       title: "Close the list",
-      desc: "At the end of the week the person who created the list can close the list. Everyone gets notified if they have to pay and how much.",
+      desc: "At the end of the event the person who created the list can close the list. The list will divide all the expenses and calculate how much everyone has to pay or will receive.",
       image: "https://ethdeveloper.com/static/get-started-3.png",
       image_width: 128,
       image_height: 128,
     },
     {
-      title: "Transfer Ether",
+      title: "Transfer",
       desc: "Every person who needs to pay, transfers Ether to the list. The list keeps track of who paid.",
       image: "https://ethdeveloper.com/static/get-started-4.png",
       image_width: 128,
@@ -279,7 +279,7 @@ function showGetStarted(params, context) {
     },
     {
       title: "Done!",
-      desc: "Once everyone paid. The list will transfer Ether automatically to the persons who are still owed Ether. The list will be resolved.",
+      desc: "Once everyone paid. The list will transfer Ether automatically to the persons whom are still owed Ether. The list will close.",
       image: "https://ethdeveloper.com/static/get-started-5.png",
       image_width: 128,
       image_height: 128,
@@ -329,7 +329,7 @@ status.command({
   name: "get-started",
   title: "get-started",
   registeredOnly: true,
-  description: "Shows a short intro describing WhoPays",
+  description: "A short intro to WhoPays",
   color: "#2bd18e",
   fullscreen: true,
   onSend: showGetStarted
@@ -358,7 +358,6 @@ var create = {
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "Created a list named: "),
           status.components.text({
@@ -366,7 +365,6 @@ var create = {
               marginTop: 2,
               fontSize: 15,
               color: "#111111",
-              fontWeight: 'bold',
             }
           }, params.name),
         ])
@@ -402,14 +400,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "Removed a list named: "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.name),
@@ -451,7 +447,6 @@ status.command({
               marginTop: 5,
               marginHorizontal: 0,
               fontSize: 14,
-              color: "#111111"
             }
           }, "Adding user with the following Ether address: " + params.address + " to " + params.name + "."),
         ])
@@ -617,14 +612,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "Activating the list named: "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.name),
@@ -680,14 +673,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "Added "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.expense),
@@ -695,14 +686,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "to: "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.list),
@@ -754,14 +743,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "Removed "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.expense),
@@ -769,14 +756,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "of: "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.list),
@@ -822,14 +807,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "Joining the list with the hash: "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.hash),
@@ -873,14 +856,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "Resolving the list named: "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.list),
@@ -929,14 +910,12 @@ status.command({
             style: {
               marginTop: 5,
               fontSize: 15,
-              color: "#111111",
             }
           }, "Paying to the list: "),
           status.components.text({
             style: {
               marginTop: 2,
               fontSize: 15,
-              color: "#111111",
               fontWeight: 'bold',
             }
           }, params.list),
