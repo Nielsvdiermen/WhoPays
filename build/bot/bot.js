@@ -360,7 +360,7 @@ var create = {
               fontSize: 15,
               color: "#111111",
             }
-          }, "Create a list named "),
+          }, "Created a list named: "),
           status.components.text({
             style: {
               marginTop: 2,
@@ -395,6 +395,27 @@ status.command({
     placeholder: "Select list",
     suggestions: listSuggestions
   }],
+   preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "Removed a list named: "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.name),
+        ])
+      }
+    },
   handler: function(params) {
     removeList(params.name);
   }
@@ -411,20 +432,6 @@ status.command({
   description: "Add a user to a list",
   color: "#2bd18e",
   sequentialParams: true,
-  preview: function (params) {
-    return {
-        markup: status.components.view({}, [
-          status.components.text({
-            style: {
-              marginTop: 5,
-              marginHorizontal: 0,
-              fontSize: 14,
-              color: "#111111"
-            }
-          }, "Adding user with the following Ether address: " + params.address + "."),
-        ])
-      }
-    },
   params: [{
     name: "name",
     type: status.types.TEXT,
@@ -436,6 +443,20 @@ status.command({
     type: status.types.TEXT,
     placeholder: "User Ether Address"
   }],
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              marginHorizontal: 0,
+              fontSize: 14,
+              color: "#111111"
+            }
+          }, "Adding user with the following Ether address: " + params.address + " to " + params.name + "."),
+        ])
+      }
+    },
   handler: function(params) {
     addUserToList(params.name, params.address);
   }
@@ -447,9 +468,18 @@ status.command({
 
 function getMemberInfo(instance, currentStatus, address) {
   if (currentStatus == 0) {
-    return status.components.text(
+    return status.components.view(
       {},
-      "current expense" + instance.memberStatus(address)
+      [
+        status.components.text(
+          {},
+          address
+        ),
+        status.components.text(
+          {},
+          "Current expense: " +  instance.memberStatus(address)
+        )
+      ]
     );
   }
 
@@ -457,16 +487,34 @@ function getMemberInfo(instance, currentStatus, address) {
     var memberBalance = instance.memberBalance(address);
 
     if(memberBalance[1] === true) {
-      return status.components.text(
+      return status.components.view(
         {},
-        "YOU GET MONEY" + web3.fromWei(memberBalance[0], 'ether')
-      )
+        [
+          status.components.text(
+            {},
+            address
+          ),
+          status.components.text(
+            {},
+            "Will receive: " + web3.fromWei(memberBalance[0], 'ether')
+          )
+        ]
+      );
     }
     else{
-      return status.components.text(
+      return status.components.view(
         {},
-        "YOU GOTTA PAY DEM BYTES" + web3.fromWei(memberBalance[0], 'ether')
-      )
+        [
+          status.components.text(
+            {},
+            address
+          ),
+          status.components.text(
+            {},
+            "Will have to pay: " + web3.fromWei(memberBalance[0], 'ether')
+          )
+        ]
+      );
     }
   }
 
@@ -487,7 +535,7 @@ function showViewList(params) {
         {},
         [status.components.text(
           {},
-          "list is closed"
+          "This list is closed"
         )]
       )
     ];
@@ -562,6 +610,27 @@ status.command({
     placeholder: "Select list",
     suggestions: listSuggestions
   }],
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "Activating the list named: "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.name),
+        ])
+      }
+    },
   handler: function(params) {  
     var list = getList(params.name);
     var addresses = [];
@@ -604,6 +673,42 @@ status.command({
     type: status.types.NUMBER,
     placeholder: "Enter expense",
   }],
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "Added "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.expense),
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "to: "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.list),
+        ])
+      }
+    },
   handler: function(params) {
     var list = getList(params.list);
     var hash = list.hash;
@@ -612,7 +717,7 @@ status.command({
       // Set defaultAccount which is needed for transactions
       web3.eth.defaultAccount = web3.eth.accounts[0];
       var tx = instance.addExpense(web3.eth.accounts[0], web3.toWei(params.expense, 'ether'));
-      status.sendMessage("Adding expenses of *Ξ" + params.expense + "*. Hold on a second..");
+      status.sendMessage("Adding expenses of *Ξ" + params.expense + "*. Please wait..");
       var txDone = waitForTransactionHash(tx);
       if (txDone) {
         status.sendMessage("Expense of *Ξ" + params.expense + "* added!");
@@ -642,6 +747,42 @@ status.command({
     type: status.types.NUMBER,
     placeholder: "Enter expense",
   }],
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "Removed "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.expense),
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "of: "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.list),
+        ])
+      }
+    },
   handler: function(params) {
     var list = getList(params.list);
     var hash = list.hash;
@@ -650,7 +791,7 @@ status.command({
       // Set defaultAccount which is needed for transactions
       web3.eth.defaultAccount = web3.eth.accounts[0];
       var tx = instance.removeExpense(web3.eth.accounts[0], web3.toWei(params.expense, 'ether'));
-      status.sendMessage("Removing expense of *Ξ" + params.expense + "*. Hold on a second..");
+      status.sendMessage("Removing expense of *Ξ" + params.expense + "*. Please wait..");
       var txDone = waitForTransactionHash(tx);
       if (txDone) {
         status.sendMessage("Expense of *Ξ" + params.expense + "* removed!");
@@ -674,6 +815,27 @@ status.command({
     type: status.types.TEXT,
     placeholder: "Enter the hash you received",
   }],
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "Joining the list with the hash: "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.hash),
+        ])
+      }
+    },
   handler: function(params) {
     if (params.hash) {
       var instance = WhoPaysContract.at(params.hash);
@@ -683,6 +845,7 @@ status.command({
       var name = instance.groupInfo();
       var users = instance.listMembers();
       joinListWithHash(name, users, params.hash);
+      status.sendMessage("Joined the list: *" + name + "*.");
     }
   }
 });
@@ -703,6 +866,27 @@ status.command({
     placeholder: "List name",
     suggestions: listSuggestions
   }],
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "Resolving the list named: "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.list),
+        ])
+      }
+    },
   handler: function(params) {
     if (params.list) {
       var list = getList(params.list);
@@ -711,10 +895,10 @@ status.command({
         // Set defaultAccount which is needed for transactions
         web3.eth.defaultAccount = web3.eth.accounts[0];
         var tx = instance.contractResolve();
-        status.sendMessage("Resolving the contract. Let's calculate how much everyone ows eachother..");
+        status.sendMessage("Resolving the contract. Let's calculate the balances..");
         var txDone = waitForTransactionHash(tx);
         if (txDone) {
-          status.sendMessage("Contract resolved! You can view the balances of everyone with the */view* command. You can notify your friends they can pay.");
+          status.sendMessage("Contract resolved! You can view the balance of everyone with the */view* command. You can notify your friends they can pay.");
         }
       }
     }
@@ -729,7 +913,7 @@ status.command({
   name: "pay",
   title: "Pay",
   registeredOnly: true,
-  description: "Send money a list",
+  description: "Pay what you owe",
   color: "#2bd18e",
   sequentialParams: true,
   params: [{
@@ -738,6 +922,27 @@ status.command({
     placeholder: "List name",
     suggestions: listSuggestions
   }],
+  preview: function (params) {
+    return {
+        markup: status.components.view({}, [
+          status.components.text({
+            style: {
+              marginTop: 5,
+              fontSize: 15,
+              color: "#111111",
+            }
+          }, "Paying to the list: "),
+          status.components.text({
+            style: {
+              marginTop: 2,
+              fontSize: 15,
+              color: "#111111",
+              fontWeight: 'bold',
+            }
+          }, params.list),
+        ])
+      }
+    },
   handler: function(params) {
     if (params.list) {
       var list = getList(params.list);
@@ -751,10 +956,10 @@ status.command({
           status.sendMessage("Transfering money to the list. Should take a moment..");
           var txDone = waitForTransactionHash(tx);
           if (txDone) {
-            status.sendMessage("You paid successfully, you just made your friends happy!");
+            status.sendMessage("You paid successfully.");
           }
         } else {
-          status.sendMessage("You don't have to pay anything, how awesome is that?!");
+          status.sendMessage("You don't have to pay anything.");
         }
       }
     }
@@ -775,9 +980,6 @@ status.command({
 
 
 /* 
-X ADD YOURSELF TO A LIST
-X ADD ETHER ICON TO EXPENSES
-X MAKE IT IMPOSSIBLE TO ADD A DOUBLE LIST
 - IMPROVE VIEW STYLING
 - IMPROVE GET STARTED STYLING
 - IMPROVE SENDMESSAGES TEXT
